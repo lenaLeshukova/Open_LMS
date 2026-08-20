@@ -22,6 +22,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Сторонние библиотеки
+    'rest_framework',
+
+    # Локальные приложения
+    'users.apps.UsersConfig',
+    'lms.apps.LmsConfig',
 ]
 
 MIDDLEWARE = [
@@ -59,8 +66,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -105,18 +116,25 @@ STATIC_URL = 'static/'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
+# Новый формат настроек почты для Django 5.2+
 MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "HOST": "smtp.yandex.ru",
+        "PORT": 465,
+        "USE_TLS": False,
+        "USE_SSL": True,
+        "USER": "your_email@yandex.ru",
+        "PASSWORD": os.getenv('EMAIL_PASSWORD'),  # Берем из .env
+    }
 }
 
-# Настройки почты Яндекс
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'your_email@yandex.ru'
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')  # Берем из .env
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "your_email@yandex.ru"
+
+# Базовый URL-адрес для доступа к медиафайлам через браузер
+MEDIA_URL = '/media/'
+
+# Абсолютный путь в файловой системе, где будут храниться загруженные файлы
+MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'users.User'
