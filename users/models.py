@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-
+from lms.models import Course, Lesson
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -39,3 +39,34 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Payment(models.Model):
+    CASH = 'cash'
+    TRANSFER = 'transfer'
+
+    PAYMENT_METHODS = [
+        (CASH, 'Наличные'),
+        (TRANSFER, 'Перевод на счет'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments', verbose_name='Пользователь')
+    payment_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата оплаты')
+
+    # Ссылки на курс или урок (что-то одно будет заполнено)
+    paid_course = models.ForeignKey('lms.Course', on_delete=models.SET_NULL, blank=True, null=True,
+                                    verbose_name='Оплаченный курс')
+    paid_lesson = models.ForeignKey('lms.Lesson', on_delete=models.SET_NULL, blank=True, null=True,
+                                    verbose_name='Оплаченный урок')
+    # DecimalField требует обязательного указания параметра max_digits (общее количество цифр)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
+    #max_length используется только для текстовых полей (CharField)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default=TRANSFER,
+                                      verbose_name='Способ оплаты')
+
+    class Meta:
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+
+    def __str__(self):
+        return f'{self.user} - {self.amount} ({self.payment_date})'
