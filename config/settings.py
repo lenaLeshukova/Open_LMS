@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     # Локальные приложения
     'users.apps.UsersConfig',
     'lms.apps.LmsConfig',
+    # Фильтрация
+    'django_filters',
 ]
 
 MIDDLEWARE = [
