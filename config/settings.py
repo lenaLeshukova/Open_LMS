@@ -1,5 +1,7 @@
 import os
+from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Загружаем переменные из .env
@@ -31,6 +33,8 @@ INSTALLED_APPS = [
     'lms.apps.LmsConfig',
     # Фильтрация
     'django_filters',
+     # JWT-авторизация
+     'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +144,21 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'
+
+# Настройки JWT-токенов
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    # Все эндпоинты в проекте по умолчанию требуют авторизации
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+# Настройки срока действия токенов
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
