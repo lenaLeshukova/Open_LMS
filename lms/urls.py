@@ -5,6 +5,8 @@ from lms.views import (
     CourseViewSet, LessonListAPIView, LessonCreateAPIView,
     LessonRetrieveAPIView, LessonUpdateAPIView, LessonDestroyAPIView
 )
+from lms.views import SubscriptionAPIView
+
 
 app_name = LmsConfig.name
 
@@ -19,4 +21,5 @@ urlpatterns = [
     path('lessons/<int:pk>/', LessonRetrieveAPIView.as_view(), name='lesson-get'),
     path('lessons/update/<int:pk>/', LessonUpdateAPIView.as_view(), name='lesson-update'),
     path('lessons/delete/<int:pk>/', LessonDestroyAPIView.as_view(), name='lesson-delete'),
+    path('courses/subscribe/', SubscriptionAPIView.as_view(), name='course-subscribe'),
 ] + router.urls  # Складываем обычные пути и пути роутера
