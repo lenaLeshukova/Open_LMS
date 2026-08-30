@@ -27,7 +27,7 @@ INSTALLED_APPS = [
 
     # Сторонние библиотеки
     'rest_framework',
-
+    'drf_yasg',
     # Локальные приложения
     'users.apps.UsersConfig',
     'lms.apps.LmsConfig',
