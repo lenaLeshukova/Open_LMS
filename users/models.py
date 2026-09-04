@@ -58,11 +58,16 @@ class Payment(models.Model):
                                     verbose_name='Оплаченный курс')
     paid_lesson = models.ForeignKey('lms.Lesson', on_delete=models.SET_NULL, blank=True, null=True,
                                     verbose_name='Оплаченный урок')
+
     # DecimalField требует обязательного указания параметра max_digits (общее количество цифр)
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
     #max_length используется только для текстовых полей (CharField)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default=TRANSFER,
                                       verbose_name='Способ оплаты')
+
+    payment_link = models.URLField(max_length=400, blank=True, null=True, verbose_name='Ссылка на оплату')
+    stripe_session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID сессии Stripe')
+    payment_status = models.CharField(max_length=50, default='pending', verbose_name='Статус платежа')
 
     class Meta:
         verbose_name = 'Платеж'
