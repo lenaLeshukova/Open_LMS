@@ -1,12 +1,15 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
 from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from users.models import Payment, User
-from users.serializers import PaymentSerializer, UserSerializer
+from users.models import Payment
+from users.models import User
+from users.serializers import PaymentSerializer
+from users.serializers import UserSerializer
 
-# Контролеры Пользователей
+
+# Контроллеры Пользователей
 class UserCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -32,11 +35,10 @@ class UserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
-# Контролер Платежей
+# Контроллер Платежей (История платежей)
 class PaymentListAPIView(generics.ListAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-
 
     # Подключаем бэкенды фильтрации и сортировки
     filter_backends = (DjangoFilterBackend, OrderingFilter)

@@ -27,7 +27,7 @@ INSTALLED_APPS = [
 
     # Сторонние библиотеки
     'rest_framework',
-
+    'drf_yasg',
     # Локальные приложения
     'users.apps.UsersConfig',
     'lms.apps.LmsConfig',
@@ -162,3 +162,5 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')

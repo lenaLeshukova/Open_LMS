@@ -1,10 +1,10 @@
+import re
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from lms.models import Course, Lesson, Subscription
-from lms.validators import YoutubeOnlyValidator
-from rest_framework import serializers
-from lms.models import Course, Lesson, Subscription
-import re
+
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,3 +51,38 @@ class CourseSerializer(serializers.ModelSerializer):
             return Subscription.objects.filter(user=request.user, course=obj).exists()
         return False
 
+class SubscriptionRequestSerializer(serializers.Serializer):
+    """Валидация входных данных для управления подпиской."""
+    course_id = serializers.IntegerField(
+        help_text="ID курса, на который пользователь хочет подписаться или отписаться."
+    )
+
+
+class SubscriptionResponseSerializer(serializers.Serializer):
+    """Формат успешного ответа для Swagger."""
+    message = serializers.CharField(help_text="Результат ('Подписка добавлена' или 'Подписка удалена').")
+
+
+class CoursePaymentRequestSerializer(serializers.Serializer):
+    """Валидация и описание параметров для создания платежа Stripe."""
+    course_id = serializers.IntegerField(
+        help_text="ID оплачиваемого курса."
+    )
+    # Используем DecimalField для безопасной работы с деньгами на уровне сериализатора
+    amount = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        min_value=Decimal('0.01'),
+        help_text="Сумма оплаты. Должна быть больше нуля (например, 499.90)."
+    )
+
+
+class CoursePaymentResponseSerializer(serializers.Serializer):
+    """Формат ответа со ссылкой на оплату Stripe."""
+    payment_url = serializers.URLField(help_text="Веб-ссылка на платежную страницу Stripe Checkout.")
+    session_id = serializers.CharField(help_text="Уникальный ID сессии платежа в Stripe.")
+
+
+class PaymentStatusResponseSerializer(serializers.Serializer):
+    """Формат ответа проверки статуса."""
+    status = serializers.CharField(help_text="Текущий статус оплаты из Stripe (например: 'paid', 'unpaid').")

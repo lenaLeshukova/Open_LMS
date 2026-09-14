@@ -2,12 +2,12 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from users.apps import UsersConfig
 from users.views import (
-    PaymentListAPIView, UserCreateAPIView, UserListAPIView,
-    UserRetrieveAPIView, UserUpdateAPIView, UserDestroyAPIView
+    UserCreateAPIView, UserListAPIView, UserRetrieveAPIView,
+    UserUpdateAPIView, UserDestroyAPIView, PaymentListAPIView
 )
 
-
 app_name = UsersConfig.name
+
 
 urlpatterns = [
     # Токены (Логин)
@@ -21,6 +21,6 @@ urlpatterns = [
     path('users/update/<int:pk>/', UserUpdateAPIView.as_view(), name='user-update'),
     path('users/delete/<int:pk>/', UserDestroyAPIView.as_view(), name='user-delete'),
 
-    # Платежи
+    # Платежи (Оставляем только историю платежей)
     path('payments/', PaymentListAPIView.as_view(), name='payment-list'),
 ]
