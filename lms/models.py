@@ -11,6 +11,8 @@ class Course(models.Model):
     # Поле владельца (связь с AUTH_USER_MODEL)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Владелец", blank=True,
                               null=True)
+    # авто-фиксация времени изменения
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата последнего обновления")
 
     class Meta:
         verbose_name = "Курс"

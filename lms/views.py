@@ -1,4 +1,3 @@
-import re
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -8,11 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from lms.models import Course, Lesson, Subscription
-from users.models import Payment
 from lms.paginators import CustomPagination
-
 from lms.permissions import IsModerator, IsOwner
-
 from lms.serializers import (
     CourseSerializer,
     LessonSerializer,
@@ -22,13 +18,14 @@ from lms.serializers import (
     CoursePaymentResponseSerializer,
     PaymentStatusResponseSerializer
 )
-
 from lms.services import (
     create_stripe_product,
     create_stripe_price,
     create_stripe_checkout_session,
     retrieve_stripe_checkout_session
 )
+from lms.tasks import send_course_update_email
+from users.models import Payment
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -53,6 +50,12 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif self.action == 'destroy':
             self.permission_classes = [IsAuthenticated, IsOwner]
         return [permission() for permission in self.permission_classes]
+
+    def perform_update(self, serializer):
+        """Переопределяем метод обновления, чтобы запустить фоновую рассылку писем """
+        course = serializer.save()
+        # Вызываем задачу асинхронно через .delay(), чтобы контроллер ответил клиенту мгновенно
+        send_course_update_email.delay(course.id)
 
 
 class LessonListAPIView(generics.ListAPIView):
