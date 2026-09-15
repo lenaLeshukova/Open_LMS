@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+from celery import Celery
 
 # Загружаем переменные из .env
 load_dotenv()
@@ -35,6 +36,8 @@ INSTALLED_APPS = [
     'django_filters',
      # JWT-авторизация
      'rest_framework_simplejwt',
+
+     'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -164,3 +167,40 @@ SIMPLE_JWT = {
 }
 
 STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+# Настройки для Celery
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'redis_protocol_version': 2
+}
+CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
+    'redis_protocol_version': 2
+}
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = 'UTC'
+
+# Обязательно включите поддержку часовых поясов
+CELERY_ENABLE_UTC = True
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# Настройки для Celery
+CELERY_BEAT_SCHEDULE = {
+    'block-inactive-users-every-day': {
+        'task': 'users.tasks.check_inactive_users',  # Путь к задаче
+        'schedule': timedelta(minutes=10),  # Расписание выполнения задачи (каждые 10 минут); (days=1) - 1 раз в день
+    },
+}
