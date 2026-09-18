@@ -12,13 +12,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
-    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем Poetry inside контейнера
-RUN curl -sSL https://python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
+# Стабильный и чистый способ установки Poetry внутри Docker-контейнера
+RUN pip install --no-cache-dir poetry
 
 # Настраиваем Poetry, чтобы он не создавал виртуальное окружение внутри контейнера
 RUN poetry config virtualenvs.create false
@@ -26,7 +24,7 @@ RUN poetry config virtualenvs.create false
 # Копируем только файлы зависимостей Poetry
 COPY pyproject.toml poetry.lock ./
 
-# Устанавливаем зависимости проекта через Poetry (пропуская dev-зависимости)
+# Устанавливаем зависимости проекта через Poetry
 RUN poetry install --no-root --no-interaction --no-ansi
 
 # Копируем весь остальной исходный код приложения в контейнер
