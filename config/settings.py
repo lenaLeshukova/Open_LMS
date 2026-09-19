@@ -13,7 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+# Добавляем '*' для прохождения тестов и работы на любом IP Яндекс Облака
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '81.26.187.178']
+
+# Если проект будет тестироваться локально или на разных IP, можно временно поставить:
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -120,7 +124,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+# Абсолютный путь для сбора статики в Docker-контейнере
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -177,10 +182,12 @@ CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
 }
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# Берем настройки из .env
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
