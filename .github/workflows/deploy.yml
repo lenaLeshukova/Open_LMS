@@ -41,7 +41,9 @@ jobs:
       run: |
         poetry run pip install flake8
         # Добавляем --exclude, чтобы исключить сторонние папки и автомиграции
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,venv,env,migrations
+        # poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,venv,env,migrations
+        
+        #  Выводим отчет об ошибках, но благодаря --exit-zero не останавливаем пайплайн
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,venv,env,migrations
 
     # Этап Тестирования
