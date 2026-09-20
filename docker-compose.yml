@@ -30,7 +30,7 @@ services:
     restart: always
     # Используем gunicorn вместо runserver
     command: >
-      bash -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+      sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
