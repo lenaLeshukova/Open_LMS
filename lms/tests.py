@@ -105,7 +105,7 @@ class LMSTestCase(APITestCase):
     def test_subscription_toggle(self):
         """Тест работы механизма подписки (активация и деактивация)."""
         self.client.force_authenticate(user=self.user)
-        url = reverse("lms:course-subscribe")
+        url = reverse("lms:subscription")
         data = {"course_id": self.course.id}
 
         # 1. Первый клик - создание подписки

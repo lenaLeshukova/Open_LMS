@@ -30,8 +30,12 @@ RUN poetry install --no-root --no-interaction --no-ansi
 # Копируем весь остальной исходный код приложения в контейнер
 COPY . .
 
+# Собираем статические файлы для Nginx (требует, чтобы в settings.py был прописан STATIC_ROOT)
+RUN python manage.py collectstatic --noinput
+
 # Создаем директорию для медиафайлов
 RUN mkdir -p /app/media
 
-# Пробрасываем порт, который будет использовать Django
+# Пробрасываем порт
 EXPOSE 8000
+
