@@ -102,20 +102,20 @@ class LMSTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.count(), 0)
 
-    # def test_subscription_toggle(self):
-    #     """Тест работы механизма подписки (активация и деактивация)."""
-    #     self.client.force_authenticate(user=self.user)
-    #     url = reverse("lms:course-subscribe")
-    #     data = {"course_id": self.course.id}
-    #
-    #     # 1. Первый клик - создание подписки
-    #     response = self.client.post(url, data=data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data["message"], "Подписка добавлена")
-    #     self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
-    #
-    #     # 2. Повторный клик - удаление подписки
-    #     response = self.client.post(url, data=data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn(response.data["message"], ["Подписка deleted", "Подписка удалена"])
-    #     self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
+    def test_subscription_toggle(self):
+        """Тест работы механизма подписки (активация и деактивация)."""
+        self.client.force_authenticate(user=self.user)
+        url = reverse("lms:subscription")
+        data = {"course_id": self.course.id}
+
+        # 1. Первый клик - создание подписки
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["message"], "Подписка добавлена")
+        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+
+        # 2. Повторный клик - удаление подписки
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(response.data["message"], ["Подписка deleted", "Подписка удалена"])
+        self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
