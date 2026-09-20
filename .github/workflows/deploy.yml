@@ -33,7 +33,7 @@ jobs:
         key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
-      if: steps:cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
 
     # Этап Линтеры. Проверка качества кода
